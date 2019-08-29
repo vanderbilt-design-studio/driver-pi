@@ -25,6 +25,7 @@ async def recv_status():
             msg = await websocket.recv()
             try:
                 msg_json = json.loads(msg)
+                logging.info(f'Received update {pprint.pformat(msg)}')
                 wiringpi.digitalWrite(22, 1 if msg_json['open'] else 0)
             except:
                 continue
