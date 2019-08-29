@@ -26,7 +26,7 @@ async def recv_status():
             try:
                 msg_json = json.loads(msg)
                 logging.info(f'Received update {pprint.pformat(msg)}')
-                wiringpi.digitalWrite(22, 1 if msg_json['open'] else 0)
+                wiringpi.digitalWrite(22, wiringpi.HIGH if msg_json['open'] else wiringpi.LOW)
             except:
                 continue
 
