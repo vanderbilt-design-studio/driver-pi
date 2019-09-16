@@ -29,7 +29,7 @@ async def recv_status():
                 msg_json = json.loads(msg)
                 logging.info(f'Received update {pprint.pformat(msg)}')
                 wiringpi.digitalWrite(22, wiringpi.HIGH if msg_json['open'] else wiringpi.LOW)
-                logging.info(f'Successfully drove relay to {'HIGH' if msg_json['open'] else 'LOW'}')
+                logging.info('Successfully drove relay to {}'.format('HIGH' if msg_json['open'] else 'LOW'))
             except:
                 logging.warn('Timed out while awaiting update, turning off relay')
                 wiringpi.digitalWrite(22, wiringpi.LOW)
