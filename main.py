@@ -12,6 +12,8 @@ from config import logging_format, server_uri
 import os
 import logging
 
+RECV_TIMEOUT: float = 60.0
+
 logging.basicConfig(level=logging.INFO, format=logging_format)
 
 ssl_context = ssl.create_default_context()
@@ -22,13 +24,13 @@ wiringpi.pinMode(22, wiringpi.OUTPUT)
 async def recv_status():
     async with websockets.connect(server_uri + '/sign', ssl=ssl_context) as websocket:
         while True:
-            msg = await websocket.recv()
             try:
+                msg = await asyncio.wait_for(websocket.recv(), timeout=RECV_TIMEOUT)
                 msg_json = json.loads(msg)
                 logging.info(f'Received update {pprint.pformat(msg)}')
                 wiringpi.digitalWrite(22, wiringpi.HIGH if msg_json['open'] else wiringpi.LOW)
             except:
-                continue
+                wiringpi.digitalWrite(22, wiringpi.LOW)
 
 while True:
     try:
