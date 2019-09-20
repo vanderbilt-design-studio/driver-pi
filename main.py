@@ -30,10 +30,10 @@ async def recv_status():
                 logging.info(f'Received update {pprint.pformat(msg)}')
                 wiringpi.digitalWrite(22, wiringpi.HIGH if msg_json['open'] else wiringpi.LOW)
                 logging.info('Successfully drove relay to {}'.format('HIGH' if msg_json['open'] else 'LOW'))
-            except:
-                logging.warn('Timed out while awaiting update, turning off relay')
+            except e:
+                logging.warning('Timed out while awaiting update, turning off relay')
                 wiringpi.digitalWrite(22, wiringpi.LOW)
-                continue
+                raise e
 
 while True:
     try:
