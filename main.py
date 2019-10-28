@@ -1,25 +1,28 @@
 import asyncio
 import ssl
-import websockets
 import json
 import pprint
-import wiringpi
-
 from typing import Dict, List
 import socket
-
-from config import logging_format, server_uri
-import os
+import platform
 import logging
 
+import websockets
+import gpiozero
+from gpiozero.pins.mock import MockFactory
+
+from config import logging_format, server_uri
+
+# This has to be slightly higher than the Heroku timeout
 RECV_TIMEOUT: float = 60.0
 
+# Mock values on non-GPIO computers
+if platform.machine() in ['x86', 'x86_64', 'i386', 'i686']:
+  gpiozero.Device.pin_factory = MockFactory()
+
 logging.basicConfig(level=logging.INFO, format=logging_format)
-
 ssl_context = ssl.create_default_context()
-
-wiringpi.wiringPiSetupGpio()
-wiringpi.pinMode(22, wiringpi.OUTPUT)
+transistor_gate_pin = gpiozero.LED('GPIO22')
 
 async def recv_status():
     async with websockets.connect(server_uri + '/sign', ssl=ssl_context) as websocket:
@@ -28,11 +31,14 @@ async def recv_status():
                 msg = await asyncio.wait_for(websocket.recv(), timeout=RECV_TIMEOUT)
                 msg_json = json.loads(msg)
                 logging.info(f'Received update {pprint.pformat(msg)}')
-                wiringpi.digitalWrite(22, wiringpi.HIGH if msg_json['open'] else wiringpi.LOW)
+                if msg_json['open']:
+                    transistor_gate_pin.on()
+                else:
+                    transistor_gate_pin.off()
                 logging.info('Successfully drove relay to {}'.format('HIGH' if msg_json['open'] else 'LOW'))
             except e:
                 logging.warning('Timed out while awaiting update, turning off relay')
-                wiringpi.digitalWrite(22, wiringpi.LOW)
+                transistor_gate_pin.off()
                 raise e
 
 while True:

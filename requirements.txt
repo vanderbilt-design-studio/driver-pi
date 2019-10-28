@@ -1,11 +1,4 @@
-certifi==2019.6.16
-chardet==3.0.4
-idna==2.8
-ifaddr==0.1.6
-requests==2.22.0
-ultimaker-printer-api==0.0.4
-urllib3==1.25.3
-uuid==1.30
+colorzero==1.1
+gpiozero==1.5.1
+RPi.GPIO==0.7.0
 websockets==8.0.2
-wiringpi==2.46.0
-zeroconf==0.23.0
