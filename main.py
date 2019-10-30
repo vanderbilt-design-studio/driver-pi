@@ -22,7 +22,7 @@ if platform.machine() in ['x86', 'x86_64', 'i386', 'i686']:
 
 logging.basicConfig(level=logging.INFO, format=logging_format)
 ssl_context = ssl.create_default_context()
-transistor_gate_pin = gpiozero.LEDBoard('GPIO22', 'GPIO23')
+transistor_gate_pin = gpiozero.LED('GPIO22')
 
 async def recv_status():
     async with websockets.connect(server_uri + '/sign', ssl=ssl_context) as websocket:
