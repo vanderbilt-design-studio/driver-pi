@@ -1,4 +1,4 @@
 colorzero==1.1
 gpiozero==1.5.1
 RPi.GPIO==0.7.0
-websockets==8.0.2
+websockets==9.1
